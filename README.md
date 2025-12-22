@@ -1,85 +1,101 @@
-Eigenfaces – PCA for Facial Recognition
+Overview
 
-Transforming high-dimensional facial data into meaningful patterns.
+This module implements Principal Component Analysis (PCA) for facial recognition. Its main goal is to compute eigenfaces, which are the principal components of a high-dimensional face dataset.
+Eigenfaces capture the most significant patterns of variation in facial images and form a lower-dimensional subspace for representing faces.
 
-A professional module that computes eigenfaces using PCA from preprocessed face images, enabling visualization, dimensionality reduction, and downstream facial recognition.
+Responsibilities / Tasks
+1. Load Preprocessed Data
 
-Project Overview
+Load the mean-centered training data (X_centered.npy) prepared by Member 2.
 
-This module is part of a collaborative project to implement facial recognition with PCA (Eigenfaces).
+Load the mean face (mean_face.npy) and reduced covariance matrix (L.npy).
 
-Computes the mean face from training data.
+2. Eigen Decomposition
 
-Performs eigen decomposition on the reduced covariance matrix.
+Perform eigenvalue decomposition on the reduced covariance matrix to obtain principal components.
 
-Generates eigenfaces, the principal components of the face dataset.
+Sort eigenvalues and eigenvectors in descending order of explained variance.
 
-Visualizes top eigenfaces and cumulative variance explained.
+3. Compute Eigenfaces
 
-Saves outputs for projection, reconstruction, and recognition in Member 4.
+Transform the eigenvectors from the reduced covariance space to the original image space.
 
-Features
-Step	Description	Status
-Load Preprocessed Data	Load X_centered.npy, mean_face.npy, and L.npy from Member 2	Done
-Eigen Decomposition	Compute eigenvalues and eigenvectors of reduced covariance	Done
-Compute Eigenfaces	Transform eigenvectors to original space and normalize	Done
-Visualization	Display top 10 eigenfaces & plot cumulative variance	Done
-Save Outputs	Save eigenfaces.npy and eigenvalues.npy for Member 4	Done
-Technical Details
+Normalize the resulting eigenfaces.
 
-Reduced Covariance Trick: Use L = X_centered * X_centered.T to avoid huge D×D covariance.
+4. Visualization
 
-Eigenfaces Calculation:
-eigenfaces = X_centered.T * eigenvectors
-Normalize each column vector.
+Display the top 10 eigenfaces as grayscale images to illustrate dominant facial patterns.
 
-Visualization: Reshape eigenfaces (10000,) → (100,100) for plotting.
+Plot cumulative variance explained by principal components.
 
-Variance Explained: Each eigenvalue represents the variance captured; cumulative variance plot shows contribution of top components.
+5. Save Outputs for Downstream Tasks
+
+Save the eigenfaces (eigenfaces.npy) and eigenvalues (eigenvalues.npy) for use by Member 4 (projection, reconstruction, and recognition).
 
 Data Used
 
-Inputs: X_centered.npy, mean_face.npy, L.npy (preprocessed by Member 2)
+Inputs from Member 2:
 
-Image size: 100 × 100 pixels
+X_centered.npy: Mean-centered training images (shape: N × D)
 
-Normalization: Pixel values scaled to [0,1]
+mean_face.npy: Mean face vector (shape: D,)
+
+L.npy: Reduced covariance matrix (shape: N × N)
+
+Assumptions:
+
+Each image is 100 × 100 pixels.
+
+Data has been preprocessed, flattened, and normalized to [0,1].
 
 Outputs
 
-eigenfaces.npy – Eigenfaces in original image space (10000 × N)
+eigenfaces.npy: Eigenfaces in the original image space (shape: D × N)
 
-eigenvalues.npy – Corresponding eigenvalues (N,)
+eigenvalues.npy: Corresponding eigenvalues (shape: N,)
 
-Visualizations: Top 10 eigenfaces, cumulative variance plot
+Visual outputs:
+
+Top 10 eigenfaces
+
+Cumulative variance explained plot
 
 Used by Member 4 to:
 
-Project faces into eigenface space
+Project new faces into eigenface space
 
-Reconstruct faces from selected components
+Reconstruct faces
 
-Perform recognition using Euclidean distance
+Perform recognition based on Euclidean distances
 
-Tech Stack
-Layer	Technology
-Language	Python
-Libraries	NumPy, Matplotlib, Pandas
-Data	Preprocessed CelebA-500 images
-Output	.npy files for eigenfaces & eigenvalues
-Quick Start (Run Locally)
-# Clone repo
-git clone <your-repo-url>
-cd Member3_Eigenfaces
+Technical Details
+Eigenfaces Calculation
 
-# Install requirements
-pip install -r requirements.txt
+Use reduced covariance trick:
+L = X_centered * X_centered.T (N × N) to avoid computing huge D × D covariance.
 
-# Run notebook or script
-jupyter notebook Member3_Eigenfaces.ipynb
+Perform eigen decomposition: np.linalg.eigh(L) → eigenvectors and eigenvalues.
+
+Transform eigenvectors to original space:
+eigenfaces = X_centered.T * eigenvectors
+
+Normalize each eigenface:
+eigenfaces[:, i] / np.linalg.norm(eigenfaces[:, i])
+
+Visualization
+
+Reshape each eigenface from 10,000-dimensional vector → 100 × 100 pixels
+
+Display grayscale images using matplotlib
+
+Variance Explained
+
+Each eigenvalue corresponds to the variance captured by its eigenface
+
+Cumulative variance plot shows how many eigenfaces are needed to capture most of the dataset’s variance
 
 References
 
 Turk, M., & Pentland, A. (1991). Eigenfaces for Recognition. Journal of Cognitive Neuroscience, 3(1), 71–86.
 
-Python Libraries: NumPy, Matplotlib
+Python libraries: numpy, matplotlib
